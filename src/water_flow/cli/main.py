@@ -7,12 +7,12 @@ def registrar_agua(ml, tipo, nota=""):
     entry_id = str(uuid.uuid4())
     timestamp = datetime.now().isoformat()
     water_log_store.append_entry(entry_id, timestamp, ml, tipo, nota)
-    print(f"✓ Registrado: {ml}ml de água\n")
+    print(f"[OK] Registrado: {ml}ml de agua\n")
 
 def mostrar_menu():
     """Exibe o menu principal do aplicativo."""
     print("\n" + "="*40)
-    print("  💧 WATER FLOW TRACKER 💧")
+    print("  WATER FLOW TRACKER")
     print("="*40)
     print("1. Registrar 250ml")
     print("2. Registrar 500ml")
@@ -25,7 +25,7 @@ def main():
     water_log_store.ensure_log_file()
     
     print("Bem-vindo ao Water Flow Tracker!")
-    print("Registre sua ingestão de água ao longo do dia.\n")
+    print("Registre sua ingestao de agua ao longo do dia.\n")
     
     while True:
         mostrar_menu()
@@ -39,21 +39,21 @@ def main():
         
         elif opcao == "3":
             try:
-                ml = int(input("Quantos ml você bebeu? "))
+                ml = int(input("Quantos ml voce bebeu? "))
                 if ml <= 0:
-                    print("❌ Por favor, insira um valor positivo.\n")
+                    print("[ERRO] Por favor, insira um valor positivo.\n")
                     continue
-                nota = input("Observação (opcional, Enter para pular): ").strip()
+                nota = input("Observacao (opcional, Enter para pular): ").strip()
                 registrar_agua(ml, "manual", nota)
             except ValueError:
-                print("❌ Por favor, insira um número válido.\n")
+                print("[ERRO] Por favor, insira um numero valido.\n")
         
         elif opcao == "4":
-            print("\n👋 Até logo! Continue se hidratando!")
+            print("\nAte logo! Continue se hidratando!")
             break
         
         else:
-            print("❌ Opção inválida. Por favor, escolha 1, 2, 3 ou 4.\n")
+            print("[ERRO] Opcao invalida. Por favor, escolha 1, 2, 3 ou 4.\n")
 
 if __name__ == "__main__":
     main()
