@@ -31,3 +31,26 @@ def append_entry(entry_id, timestamp, ml, entry_type, note=""):
     with open(log_path, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow([entry_id, timestamp, ml, entry_type, note])
+
+def load_entries():
+    
+    log_path = get_log_file_path()
+    entries = []
+
+    if not log_path.exists():
+        return entries
+    
+    with open(log_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        
+        for row in reader:
+            try:
+                row['ml'] = int(row['ml'])
+            except ValueError:
+                print(f'Aviso: Valor de "ml" inválido na linha: {row}. Ignorando.')
+                continue
+            entries.append(row)    
+
+    return entries
+
+

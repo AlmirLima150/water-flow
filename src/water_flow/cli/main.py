@@ -1,31 +1,60 @@
 from water_flow.storage import water_log_store
 from datetime import datetime
+import pandas as pd
 import uuid
+
 
 def registrar_agua(ml, tipo, nota=""):
     """Registra uma entrada de água no log."""
     entry_id = str(uuid.uuid4())
     timestamp = datetime.now().isoformat()
     water_log_store.append_entry(entry_id, timestamp, ml, tipo, nota)
-    print(f"[OK] Registrado: {ml}ml de agua\n")
+    print(f"✓ Registrado: {ml}ml de água\n")
 
 def mostrar_menu():
     """Exibe o menu principal do aplicativo."""
     print("\n" + "="*40)
-    print("  WATER FLOW TRACKER")
+    print("  💧 WATER FLOW TRACKER 💧")
     print("="*40)
     print("1. Registrar 250ml")
     print("2. Registrar 500ml")
     print("3. Registrar valor manual")
-    print("4. Sair")
+    print("4. Valor de água ingerido")
+    print("5. Sair")
     print("="*40)
 
+def ver_total_hoje():
+    log_path = water_log_store.get_log_file_path()
+    
+    if not log_path.exists():
+        print("❌ Nenhum registro encontrado.\n")
+        return
+    
+    df = pd.read_csv(log_path)
+
+    if df.empty:
+        print("❌ Nenhum registro encontrado.\n")
+        return
+    
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+    df['date'] = df['timestamp'].dt.date
+    hoje = datetime.now().date()
+    df_hoje = df[df["date"] == hoje]
+    
+    if df_hoje.empty:
+        print("💧 Você ainda não registrou água hoje.\n")
+        return
+    
+    total_ml = df_hoje['ml'].sum() 
+    print(f"💧 Total de hoje: {total_ml}ml\n")
+    
+    
 def main():
     # Garante que o arquivo existe
     water_log_store.ensure_log_file()
     
     print("Bem-vindo ao Water Flow Tracker!")
-    print("Registre sua ingestao de agua ao longo do dia.\n")
+    print("Registre sua ingestão de água ao longo do dia.\n")
     
     while True:
         mostrar_menu()
@@ -39,21 +68,24 @@ def main():
         
         elif opcao == "3":
             try:
-                ml = int(input("Quantos ml voce bebeu? "))
+                ml = int(input("Quantos ml você bebeu? "))
                 if ml <= 0:
-                    print("[ERRO] Por favor, insira um valor positivo.\n")
+                    print("❌ Por favor, insira um valor positivo.\n")
                     continue
-                nota = input("Observacao (opcional, Enter para pular): ").strip()
+                nota = input("Observação (opcional, Enter para pular): ").strip()
                 registrar_agua(ml, "manual", nota)
             except ValueError:
-                print("[ERRO] Por favor, insira um numero valido.\n")
+                print("❌ Por favor, insira um número válido.\n")
         
         elif opcao == "4":
-            print("\nAte logo! Continue se hidratando!")
+            ver_total_hoje()
+
+        elif opcao == "5":
+            print("\n👋 Até logo! Continue se hidratando!")
             break
         
         else:
-            print("[ERRO] Opcao invalida. Por favor, escolha 1, 2, 3 ou 4.\n")
+            print("❌ Opção inválida. Por favor, escolha 1, 2, 3 ou 4.\n")
 
 if __name__ == "__main__":
     main()
